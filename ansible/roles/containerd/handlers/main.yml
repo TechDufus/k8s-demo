@@ -1,0 +1,9 @@
+---
+- name: Apply systemctl settings
+  command: sysctl --system
+  become: true
+
+- name: Restart ContianerD
+  shell: systemctl restart containerd
+  become: true
+

@@ -1,0 +1,19 @@
+---
+# tasks file for roles/containerd
+
+- name: Configure ContainerD
+  import_tasks: containerd-Config.yml
+  tags:
+    - containerd-Config
+    - containerd
+    - all
+    - never
+
+- name: Install ContainerD
+  import_tasks: containerd-Install.yml
+  tags:
+    - containerd-Install
+    - containerd
+    - all
+    - never
+

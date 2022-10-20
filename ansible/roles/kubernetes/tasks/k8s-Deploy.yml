@@ -1,0 +1,13 @@
+---
+- name: Deploy app
+  block:
+    - name: Copy the kitty
+      copy:
+        src: "{{ playbook_dir }}/../k8s/deployment.yml"
+        dest: ~/deployment.yml
+        force: true
+
+    - name: Deploy the kitty
+      shell: |
+        kubectl apply -f deployment.yml
+  when: inventory_hostname in groups["k8sMaster"]

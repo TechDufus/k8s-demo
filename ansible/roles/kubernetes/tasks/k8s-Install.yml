@@ -1,0 +1,30 @@
+---
+- name: "Install Kubernetes {{ gvars.k8s.package_versions['kubectl'] }} on Debian"
+  block:
+    - name: Adding kubernetes apt key
+      apt_key:
+        url: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
+
+    - name: Adding kubernetes apt repo
+      apt_repository:
+        repo: "deb https://apt.kubernetes.io/ kubernetes-xenial main"
+        
+    - name: Installing Kubernetes 
+      apt:
+        name: "{{ item.name }}={{ item.version }}"
+        state: present
+        force: true
+      loop: "{{ gvars.k8s.package_versions }}"
+
+    - name: Preventing unintended upgrades
+      dpkg_selections:
+        name: "{{ item.name }}"
+        selection: hold
+      loop: "{{ gvars.k8s.package_versions }}"
+
+    - name: Ensure kubelet is started and enabled at boot.
+      service:
+        name: kubelet
+        state: started
+        enabled: true
+  when: ansible_os_family == "Debian"

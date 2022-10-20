@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catfact-service
+spec:
+  selector:
+    app: catfact
+  type: NodePort
+  ports:
+    - name: http
+      port: 80
+      targetPort: 10000
+      nodeport: 31420
+      protocol: TCP

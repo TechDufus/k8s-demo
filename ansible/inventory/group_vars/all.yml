@@ -1,0 +1,11 @@
+gvars:
+  k8s:
+    user: kube
+    pod_network_cidr: 10.244.0.0/16
+    package_versions:
+      - { name: kubelet, version: 1.25.3-00 }
+      - { name: kubeadm, version: 1.25.3-00 }
+      - { name: kubectl, version: 1.25.3-00 }
+
+  github_authorized_ssh_users:
+    - techdufus

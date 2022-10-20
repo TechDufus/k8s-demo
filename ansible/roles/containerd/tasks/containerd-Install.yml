@@ -1,0 +1,9 @@
+---
+- name: Installing ContainerD
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+  loop:
+    - containerd
+

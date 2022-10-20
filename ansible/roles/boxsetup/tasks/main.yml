@@ -1,0 +1,27 @@
+---
+# tasks file for roles/boxsetup
+
+
+- name: Update OS
+  import_tasks: boxsetup-UpdateOS.yml
+  tags:
+    - boxsetup-UpdateOS
+    - boxsetup
+    - all
+    - never
+
+- name: User Setup
+  import_tasks: boxsetup-UserSetup.yml
+  tags:
+    - boxsetup-UserSetup
+    - boxsetup
+    - all
+    - never
+
+- name: Swap Config
+  import_tasks: boxsetup-SwapConfig.yml
+  tags:
+    - boxsetup-SwapConfig
+    - boxsetup
+    - all
+    - never

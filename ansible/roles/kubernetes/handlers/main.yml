@@ -1,0 +1,6 @@
+---
+# handlers file for roles/kubernetes
+- name: Apply systemctl settings
+  command: sysctl --system
+  become: true
+

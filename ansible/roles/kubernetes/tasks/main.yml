@@ -1,0 +1,28 @@
+---
+# tasks file for roles/kubernetes
+- name: Install Kubernetes
+  import_tasks: k8s-Install.yml
+  tags:
+    - k8s-Install
+    - kubernetes
+    - k8s
+    - all
+    - never
+
+- name: Configure Kubernetes
+  import_tasks: k8s-Config.yml
+  tags:
+    - k8s-Config
+    - kubernetes
+    - k8s
+    - all
+    - never
+
+- name: Deploy Kubernetes
+  import_tasks: k8s-Deploy.yml
+  tags:
+    - k8s-Deploy
+    - kubernetes
+    - k8s
+    - all
+    - never

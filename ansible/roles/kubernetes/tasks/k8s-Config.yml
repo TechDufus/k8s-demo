@@ -1,0 +1,100 @@
+---
+
+- name: Set system configurations for Kubernetes networking
+  file:
+    path: "/etc/sysctl.d/99-kubernetes-cri.conf"
+    state: "touch"
+  notify:
+    - "Apply systemctl settings"
+
+- name: Configure k8s Master Node
+  block:
+    - name: Check if Kubernetes has already been initialized
+      stat:
+        path: /etc/kubernetes/admin.conf
+      register: k8s_init_stat
+
+    - name: Restart containerd
+      systemd:
+        name: containerd.service
+        state: restarted
+
+    - name: Initialize the cluster
+      shell: "kubeadm init --pod-network-cidr={{ gvars.k8s.pod_network_cidr }}" 
+      # no_log: true
+      when: not k8s_init_stat.stat.exists
+
+    - name: Ensure .kube directory exists.
+      file:
+        path: "~{{ item }}/.kube"
+        state: directory
+        owner: "{{ item }}"
+        group: "{{ item }}"
+      loop:
+        - root
+        - "{{ gvars.k8s.user }}"
+
+    - name: Set permissions on kubernetes admin.conf.
+      file:
+        path: /etc/kubernetes/admin.conf
+        owner: root
+        group: "{{ gvars.k8s.user }}"
+        mode: 0660
+        state: file
+
+    - name: Symlink the kubectl admin.conf to ~/.kube/conf.
+      file:
+        src: /etc/kubernetes/admin.conf
+        dest: "~{{ item }}/.kube/config"
+        owner: "{{ item }}"
+        group: "{{ item }}"
+        state: link
+      loop:
+        - root
+        - "{{ gvars.k8s.user }}"
+
+    - name: Install Pod network
+      become: true
+      become_user: "{{ gvars.k8s.user }}"
+      shell: kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
+      args:
+        chdir: $HOME
+        
+    - name: Get the token for joining the worker nodes
+      become: true
+      become_user: "{{ gvars.k8s.user }}"
+      shell: kubeadm token create  --print-join-command
+      register: kubernetes_join_command
+
+    # - debug:
+    #   msg: "{{ kubernetes_join_command.stdout }}"
+
+    - name: Copy join command to local file.
+      become: true
+      local_action: copy content="{{ kubernetes_join_command.stdout_lines[0] }}" dest="/tmp/kubernetes_join_command" mode=0777 
+  when: inventory_hostname in groups["k8sMaster"]
+
+- name: Configure k8s Worker Node
+  block:
+    - name: Copy join command from Ansiblehost to the worker nodes.
+      become: true
+      copy:
+        src: /tmp/kubernetes_join_command
+        dest: /tmp/kubernetes_join_command
+        mode: 0777
+
+      # Add intellegence to skip if already joined
+    - name: Join the Worker nodes to the cluster.
+      become: true
+      command: sh /tmp/kubernetes_join_command
+      register: joined_or_not
+
+    - name: Delete k8s join command file
+      file:
+        path: /tmp/kubernetes_join_command
+        state: absent
+      delegate_to: localhost
+      become: true
+  when: inventory_hostname in groups["k8sNode"]
+
+

@@ -1,0 +1,41 @@
+---
+- hosts: k8sCluster
+  gather_facts: no
+  vars:
+    site: inventory
+    project: TechDufus K8s Cluster
+    date: "{{ lookup('pipe','date +%Y.%m.%d.%H.%M') }}"
+
+# Define All tasks
+  tasks:
+  - name: Running project {{project}} on {{site}} with Tags {{ansible_run_tags}} specified And tags {{ansible_skip_tags}} skipped
+    delegate_to: localhost
+    run_once: true
+    command: /bin/echo "Only running because of specified tag"
+    changed_when: False
+    tags:
+        - always
+
+  - name: Collect Facts
+    setup:
+
+  - name: BoxSetup Role
+    import_role:
+        name: boxsetup
+
+  - name: Docker Role
+    import_role:
+        name: docker
+
+  - name: ContainerD Role
+    import_role:
+        name: containerd
+
+  - name: Kubernetes Role
+    import_role:
+        name: kubernetes
+
+# Usage Task
+  - debug: msg='You Must Specify a Tag to run this play Please see the Readme'
+    run_once: true 
+
