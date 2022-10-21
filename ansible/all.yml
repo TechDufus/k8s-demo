@@ -31,13 +31,13 @@
     import_role:
         name: containerd
 
-  - name: Kubernetes Role
-    import_role:
-        name: kubernetes
-
   - name: Helm Role
     import_role:
         name: helm
+
+  - name: Kubernetes Role
+    import_role:
+        name: kubernetes
 
   - name: Cleanup Role
     import_role:
