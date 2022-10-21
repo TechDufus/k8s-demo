@@ -4,8 +4,13 @@
   # delegate_to: localhost
   become: false
 
-- name: Add Watcher Ingress Repository
+- name: Add Nginx Ingress Repository
   command: "helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx"
+  # delegate_to: localhost
+  become: false
+
+- name: Add Traefik Ingress Repository
+  command: "helm repo add ingress-traefik https://helm.traefik.io/traefik"
   # delegate_to: localhost
   become: false
 
