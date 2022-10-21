@@ -1,5 +1,4 @@
 ---
-
 - name: Creating new k8s user
   user:
     name: "{{ gvars.k8s.user }}"
@@ -12,15 +11,14 @@
   template:
     src: k8s_user.j2
     dest: "/etc/sudoers.d/{{ gvars.k8s.user }}"
+    mode: 0644
     validate: 'visudo -cf %s'
     backup: true
 
 - name: "Adding Github users SSH keys to authorized_users for user: [{{ gvars.k8s.user }}]"
   authorized_key:
     user: "{{ gvars.k8s.user }}"
-    key: "{{ lookup('ansible.builtin.url', 'https://github.com/{{ item }}.keys', split_lines=False) }}"
+    key: "{{ lookup('ansible.builtin.url', 'https://github.com/(item).keys', split_lines=False) }}"
     state: present
     exclusive: true
   loop: "{{ gvars.github_authorized_ssh_users }}"
-
- 

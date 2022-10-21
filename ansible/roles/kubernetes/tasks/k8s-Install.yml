@@ -8,8 +8,8 @@
     - name: Adding kubernetes apt repo
       apt_repository:
         repo: "deb https://apt.kubernetes.io/ kubernetes-xenial main"
-        
-    - name: Installing Kubernetes 
+
+    - name: Installing Kubernetes
       apt:
         name: "{{ item.name }}={{ item.version }}"
         state: present

@@ -4,6 +4,7 @@
   become: true
 
 - name: Restart ContianerD
-  shell: systemctl restart containerd
+  systemd:
+    name: containerd
+    state: restarted
   become: true
-

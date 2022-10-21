@@ -3,4 +3,3 @@
 - name: Apply systemctl settings
   command: sysctl --system
   become: true
-

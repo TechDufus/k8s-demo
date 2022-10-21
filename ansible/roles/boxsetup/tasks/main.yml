@@ -1,7 +1,5 @@
 ---
 # tasks file for roles/boxsetup
-
-
 - name: Update OS
   import_tasks: boxsetup-UpdateOS.yml
   tags:

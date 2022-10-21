@@ -5,6 +5,7 @@
       copy:
         src: "{{ playbook_dir }}/../k8s/deployment.yml"
         dest: ~/deployment.yml
+        mode: 0644
         force: true
 
     - name: Deploy the kitty

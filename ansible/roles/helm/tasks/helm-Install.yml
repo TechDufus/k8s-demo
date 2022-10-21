@@ -10,14 +10,14 @@
 
     - name: Unarchive
       unarchive:
-        copy: no
+        copy: true
         src: '/tmp/{{ kubernetes_helm_tgz }}'
         dest: /tmp
         creates: '/tmp/{{ kubernetes_helm_platform }}'
 
     - name: Copy binaries
       copy:
-        remote_src: yes
+        remote_src: true
         src: '/tmp/{{ kubernetes_helm_platform }}/helm'
         dest: '{{ kubernetes_helm_install_dir }}/helm'
         owner: root
@@ -32,4 +32,3 @@
       loop:
         - /tmp/{{ kubernetes_helm_tgz }}
         - /tmp/{{ kubernetes_helm_platform }}
-

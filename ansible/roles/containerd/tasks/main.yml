@@ -1,6 +1,5 @@
 ---
 # tasks file for roles/containerd
-
 - name: Configure ContainerD
   import_tasks: containerd-Config.yml
   tags:
@@ -16,4 +15,3 @@
     - containerd
     - all
     - never
-

@@ -1,5 +1,4 @@
 ---
-
 - name: Installing Docker Engine
   apt:
     name: "{{ item }}"
@@ -7,4 +6,3 @@
     update_cache: true
   loop:
     - docker.io
-

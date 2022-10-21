@@ -1,16 +1,15 @@
 ---
 - name: Update APT packages
   apt:
-    update_cache: yes
+    update_cache: true
 
 - name: Upgrade APT packages
   apt:
     upgrade: 'yes' # <-- This expects a STRING for some reason...
-  
+
 - name: Install APT packages
   apt:
     name: "{{ item }}"
-    state: latest
-    update_cache: yes
+    state: present
+    update_cache: true
   loop: "{{ commonPackages }}"
-

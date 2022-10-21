@@ -2,6 +2,7 @@
 - name: Create containerd config file
   file:
     path: "/etc/modules-load.d/containerd.conf"
+    mode: 0644
     state: "touch"
 
 - name: Add conf for containerd modules
@@ -12,21 +13,23 @@
       br_netfilter
 
 - name: modprobe overlay
-  shell: modprobe overlay
+  command: modprobe overlay
   become: true
 
 - name: modprobe br_netfilter
-  shell: modprobe br_netfilter
+  command: modprobe br_netfilter
   become: true
 
 - name: Create k8s cri config file
   file:
     path: "/etc/sysctl.d/99-kubernetes-cri.conf"
+    mode: 0644
     state: touch
-    
+
 - name: Add conf for containerd
   blockinfile:
     path: "/etc/sysctl.d/99-kubernetes-cri.conf"
+    mode: 0644
     state: present
     block: |
            net.bridge.bridge-nf-call-iptables = 1
@@ -35,4 +38,3 @@
 
   notify:
     - "Apply systemctl settings"
-

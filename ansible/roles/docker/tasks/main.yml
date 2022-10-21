@@ -1,6 +1,5 @@
 ---
 # tasks file for roles/docker
-
 - name: Install Docker
   import_tasks: docker-Install.yml
   tags:
@@ -8,4 +7,3 @@
     - docker
     - all
     - never
-
