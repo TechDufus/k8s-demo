@@ -35,6 +35,14 @@
     import_role:
         name: kubernetes
 
+  - name: Helm Role
+    import_role:
+        name: helm
+
+  - name: Cleanup Role
+    import_role:
+        name: cleanup
+
 # Usage Task
   - debug: msg='You Must Specify a Tag to run this play Please see the Readme'
     run_once: true 

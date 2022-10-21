@@ -1,0 +1,14 @@
+
+global:
+  image_repo: "techdufus"
+
+replicas: 1
+
+image:
+  name: "livestream-test"
+  tag: "live"
+  pullPolicy: "Always"
+  port: 10000
+
+
+

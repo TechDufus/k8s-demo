@@ -3,29 +3,33 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: catfact
-  name: catfact
+    app: {{ .Chart.Name | quote }}
+  name: {{ .Chart.Name | quote }}
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: catfact
+      app: {{ .Chart.Name | quote }}
   strategy:
-    type: RollingUpdate
     rollingUpdate:
-      maxUnavailable: 0
-      maxSurge: 1
+      maxUnavailable: 25%
   template:
     metadata:
       labels:
-        app: catfact
+        app: {{ .Chart.Name | quote }}
     spec:
       containers:
-      - image: techdufus/livestream-test:live
-        name: catfact
+      - image: "{{ .Values.global.image_repo }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+        name: {{ .Chart.Name | quote }}
         ports:
         - containerPort: 10000  
         readinessProbe:
           httpGet:
             path: /
-            port: 10000
+            port: {{ .Values.image.port }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+{{- if .Values.resources}}
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+{{- end }}
+        restartPolicy: Always

@@ -1,0 +1,6 @@
+---
+kubernetes_helm_version: '3.9.0'
+kubernetes_helm_platform: 'linux-amd64'
+
+kubernetes_helm_checksum: 'sha256:1484ffb0c7a608d8069470f48b88d729e88c41a1b6602f145231e8ea7b43b50a'
+kubernetes_helm_install_dir: '/usr/bin'

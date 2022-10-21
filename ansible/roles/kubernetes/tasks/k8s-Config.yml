@@ -72,6 +72,20 @@
     - name: Copy join command to local file.
       become: true
       local_action: copy content="{{ kubernetes_join_command.stdout_lines[0] }}" dest="/tmp/kubernetes_join_command" mode=0777 
+
+    - name: Create {{ gvars.k8s.flux_namespace }} namespace
+      shell: |
+        kubectl get namespace/{{ gvars.k8s.flux_namespace }} 2>/dev/null || kubectl create namespace {{ gvars.k8s.flux_namespace }}
+      args:
+        executable: /bin/bash
+
+    - name: Create {{ gvars.k8s.flux_namespace }} context
+      shell: |
+        kubectl config set-context {{ gvars.k8s.flux_namespace }} --user=kubernetes-admin --cluster=kubernetes --namespace={{ gvars.k8s.flux_namespace }}
+
+    - name: Switch to {{ gvars.k8s.flux_namespace }} context
+      shell: |
+        kubectl config use-context {{ gvars.k8s.flux_namespace }}
   when: inventory_hostname in groups["k8sMaster"]
 
 - name: Configure k8s Worker Node
@@ -88,6 +102,13 @@
       become: true
       command: sh /tmp/kubernetes_join_command
       register: joined_or_not
+      failed_when: false #FIX THIS: NOT A PERMANENT SOLUTION
+
+    - name: Delete k8s join command file
+      file:
+        path: /tmp/kubernetes_join_command
+        state: absent
+      become: true
 
     - name: Delete k8s join command file
       file:
@@ -95,6 +116,7 @@
         state: absent
       delegate_to: localhost
       become: true
+      run_once: true
   when: inventory_hostname in groups["k8sNode"]
 
 

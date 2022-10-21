@@ -1,0 +1,15 @@
+---
+# tasks file for roles/cleanup
+- name: Clean apt cache
+  command: 'apt-get clean'
+  when: ansible_os_family == 'Debian'
+
+- name: ensure docker is running (for pruning)
+  service:
+    name: docker
+    state: started
+
+- name: prune docker artifacts
+  shell: docker system prune --volumes --force
+
+

@@ -1,0 +1,35 @@
+---
+- name: Check for installation of helm
+  block:
+    - name: Download...
+      get_url:
+        url: '{{ kubernetes_helm_url }}'
+        dest: '/tmp/{{ kubernetes_helm_tgz }}'
+        checksum: '{{ kubernetes_helm_checksum }}'
+        mode: 0644
+
+    - name: Unarchive
+      unarchive:
+        copy: no
+        src: '/tmp/{{ kubernetes_helm_tgz }}'
+        dest: /tmp
+        creates: '/tmp/{{ kubernetes_helm_platform }}'
+
+    - name: Copy binaries
+      copy:
+        remote_src: yes
+        src: '/tmp/{{ kubernetes_helm_platform }}/helm'
+        dest: '{{ kubernetes_helm_install_dir }}/helm'
+        owner: root
+        group: root
+        mode: 0755
+
+  always:
+    - name: Cleanup...
+      file:
+        path: '{{ item }}'
+        state: absent
+      loop:
+        - /tmp/{{ kubernetes_helm_tgz }}
+        - /tmp/{{ kubernetes_helm_platform }}
+

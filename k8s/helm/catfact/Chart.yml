@@ -1,0 +1,5 @@
+---
+apiVersion: "v2"
+description: "Catfact app"
+name: catfact
+version: 0.0.1
