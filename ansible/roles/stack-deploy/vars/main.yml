@@ -1,0 +1,9 @@
+---
+# vars file for roles/stack_deploy
+
+stack_charts:
+  - { name: catfact, chart_name: catfact }
+  - { name: traefik-ingress, chart_name: traefik-ingress }
+
+
+

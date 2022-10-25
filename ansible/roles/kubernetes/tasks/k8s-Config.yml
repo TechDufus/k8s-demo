@@ -49,6 +49,7 @@
         dest: "~{{ item }}/.kube/config"
         owner: "{{ item }}"
         group: "{{ item }}"
+        mode: 0755
         state: link
       loop:
         - root

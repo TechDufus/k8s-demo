@@ -38,3 +38,4 @@
 
   notify:
     - "Apply systemctl settings"
+

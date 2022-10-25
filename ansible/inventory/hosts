@@ -4,11 +4,11 @@ k8sMaster
 k8sNode
 
 [k8sMaster]
-k8sMaster-1 ansible_host=REPLACE_ME ansible_user=root
+k8sMaster-1 ansible_host=23.88.104.29 ansible_user=kube
 
 
 [k8sNode]
-k8sNode-1 ansible_host=REPLACE_ME ansible_user=root
-k8sNode-2 ansible_host=REPLACE_ME ansible_user=root
-k8sNode-3 ansible_host=REPLACE_ME ansible_user=root
+k8sNode-1 ansible_host=195.201.228.7 ansible_user=kube
+k8sNode-2 ansible_host=162.55.49.154 ansible_user=kube
+k8sNode-3 ansible_host=5.161.156.95 ansible_user=kube
 

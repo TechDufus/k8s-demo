@@ -1,0 +1,23 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+  labels:
+    # app.kubernetes.io/instance: traefik
+    app.kubernetes.io/managed-by: Helm
+    # app.kubernetes.io/name: traefik
+    # helm.sh/chart: traefik-9.18.1
+  name: traefik-dashboard
+  # namespace: traefik
+  namespace: flux
+spec:
+  entryPoints:
+  - traefik
+  routes:
+  - kind: Rule
+    match: PathPrefix(`/dashboard`) || PathPrefix(`/api`)
+    services:
+    - kind: TraefikService
+      name: api@internal

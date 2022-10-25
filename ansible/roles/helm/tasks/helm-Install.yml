@@ -10,7 +10,7 @@
 
     - name: Unarchive
       unarchive:
-        copy: true
+        remote_src: true
         src: '/tmp/{{ kubernetes_helm_tgz }}'
         dest: /tmp
         creates: '/tmp/{{ kubernetes_helm_platform }}'
@@ -23,6 +23,7 @@
         owner: root
         group: root
         mode: 0755
+      become: true
 
   always:
     - name: Cleanup...

@@ -1,0 +1,14 @@
+---
+- name: Install Stack Components
+  block:
+    - include_tasks: stack-Install.yml
+      loop: "{{ stack_charts }}"
+      loop_control:
+        loop_var: chart
+  tags:
+    - stack-Install
+    - stack
+    - all
+    - never
+  when: inventory_hostname in groups["k8sMaster"]
+

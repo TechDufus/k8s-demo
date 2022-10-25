@@ -18,10 +18,14 @@
 
     - name: Collect Facts
       setup:
+      become: true
+      become_user: root
 
     - name: BoxSetup Role
       import_role:
         name: boxsetup
+      become: true
+      become_user: root
 
     - name: Docker Role
       import_role:
@@ -38,6 +42,10 @@
     - name: Kubernetes Role
       import_role:
         name: kubernetes
+
+    - name: Stack Install Role
+      import_role:
+        name: stack-deploy 
 
     - name: Cleanup Role
       import_role:

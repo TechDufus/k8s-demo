@@ -5,10 +5,11 @@
     clean: true
   when: ansible_os_family == 'Debian'
 
-- name: ensure docker is running (for pruning)
+- name: Ensure Docker is running (for pruning)
   service:
     name: docker
     state: started
 
-- name: prune docker artifacts
+- name: Prune Docker artifacts
   command: docker system prune --volumes --force
+
