@@ -4,7 +4,7 @@
   become: true
 
 - name: Restart ContianerD
-  systemd:
+  ansible.builtin.systemd:
     name: containerd
-    state: restarted
+    state: started
   become: true

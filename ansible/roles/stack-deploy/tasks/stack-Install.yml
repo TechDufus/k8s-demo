@@ -2,7 +2,7 @@
 - name: "Copying {{ chart.name }} directory..."
   copy:
     src: "{{ playbook_dir }}/../k8s/helm/{{ chart.name }}"
-    dest: "/tmp"
+    dest: "/tmp/"
     owner: "{{ gvars.k8s.user }}"
     group: "{{ gvars.k8s.user }}"
     directory_mode: 0755
@@ -10,10 +10,14 @@
   become: true
 
 - name: "Packaging Helm Chart {{ chart.name }}"
-  command: helm package . | sed 's:.*/::'
+  shell: |
+    helm package . | sed 's:.*/::'
   args:
     chdir: "/tmp/{{ chart.name }}"
+    executable: /bin/bash
   register: packaged_chart_name
+  become: true
+  become_user: "{{ gvars.k8s.user }}"
 
 - name: "Setting package name fact"
   set_fact:
@@ -23,8 +27,12 @@
   command: helm install {{ chart.name }} {{ package_name }}
   args:
     chdir: "/tmp/{{ chart.name }}"
+  become: true
+  become_user: "{{ gvars.k8s.user }}"
 
 - name: "Cleanup {{ chart.name }} chart directory"
   file:
     path: "/tmp/{{ chart.name }}"
     state: absent
+  become: true
+  become_user: "{{ gvars.k8s.user }}"

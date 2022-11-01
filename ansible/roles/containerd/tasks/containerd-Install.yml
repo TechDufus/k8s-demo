@@ -4,6 +4,7 @@
     name: "{{ item }}"
     state: present
     update_cache: true
+  become: true
   loop:
     - containerd
 

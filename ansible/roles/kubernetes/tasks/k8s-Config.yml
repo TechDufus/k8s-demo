@@ -4,69 +4,73 @@
     path: "/etc/sysctl.d/99-kubernetes-cri.conf"
     mode: 0644
     state: "touch"
+  become: true
   notify:
     - "Apply systemctl settings"
 
 - name: Configure k8s Master Node
   block:
+    - name: Deploy Kebernetes aliases
+      template:
+        src: "k8s_aliases.j2"
+        dest: /etc/profile.d/k8s_aliases.sh
+        mode: 0644
+      become: true
+
     - name: Check if Kubernetes has already been initialized
       stat:
         path: /etc/kubernetes/admin.conf
       register: k8s_init_stat
 
-    - name: Restart containerd
-      systemd:
-        name: containerd.service
-        state: restarted
-
     - name: Initialize the cluster
       command: "kubeadm init --pod-network-cidr={{ gvars.k8s.pod_network_cidr }}"
       # no_log: true
       when: not k8s_init_stat.stat.exists
+      become: true
 
     - name: Ensure .kube directory exists.
       file:
-        path: "~{{ item }}/.kube"
+        path: "~{{ gvars.k8s.user }}/.kube"
         state: directory
-        owner: "{{ item }}"
-        group: "{{ item }}"
-        mode: 0644
-      loop:
-        - root
-        - "{{ gvars.k8s.user }}"
+        owner: "{{ gvars.k8s.user }}"
+        group: "{{ gvars.k8s.user }}"
+        mode: 0755
+        force: true
+      become: true
 
     - name: Set permissions on kubernetes admin.conf.
       file:
         path: /etc/kubernetes/admin.conf
-        owner: root
+        owner: "{{ gvars.k8s.user }}"
         group: "{{ gvars.k8s.user }}"
-        mode: 0660
+        mode: 0644
         state: file
+      become: true
 
-    - name: Symlink the kubectl admin.conf to ~/.kube/conf.
+    - name: Symlink the kubectl admin.conf to /home/kube/.kube/config
       file:
         src: /etc/kubernetes/admin.conf
-        dest: "~{{ item }}/.kube/config"
-        owner: "{{ item }}"
-        group: "{{ item }}"
-        mode: 0755
+        dest: "~{{ gvars.k8s.user }}/.kube/config"
+        owner: "{{ gvars.k8s.user }}"
+        group: "{{ gvars.k8s.user }}"
+        mode: 0700
         state: link
-      loop:
-        - root
-        - "{{ gvars.k8s.user }}"
-
-    - name: Install Pod network
+        force: true
       become: true
       become_user: "{{ gvars.k8s.user }}"
+
+    - name: Install Pod network
       command: kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
       args:
         chdir: $HOME
-
-    - name: Get the token for joining the worker nodes
       become: true
       become_user: "{{ gvars.k8s.user }}"
+
+    - name: Get the token for joining the worker nodes
       shell: kubeadm token create  --print-join-command
       register: kubernetes_join_command
+      become: true
+      become_user: "{{ gvars.k8s.user }}"
 
     # - debug:
     #   msg: "{{ kubernetes_join_command.stdout }}"
@@ -76,6 +80,7 @@
         content: "{{ kubernetes_join_command.stdout_lines[0] }}"
         dest: "/tmp/kubernetes_join_command"
         mode: 0644
+      delegate_to: localhost
       become: true
 
     - name: Create {{ gvars.k8s.flux_namespace }} namespace
@@ -83,27 +88,34 @@
         kubectl get namespace/{{ gvars.k8s.flux_namespace }} 2>/dev/null || kubectl create namespace {{ gvars.k8s.flux_namespace }}
       args:
         executable: /bin/bash
+      become: true
+      become_user: "{{ gvars.k8s.user }}"
 
     - name: Create {{ gvars.k8s.flux_namespace }} context
       shell: |
         kubectl config set-context {{ gvars.k8s.flux_namespace }} --user=kubernetes-admin --cluster=kubernetes --namespace={{ gvars.k8s.flux_namespace }}
+      become: true
+      become_user: "{{ gvars.k8s.user }}"
 
     - name: Switch to {{ gvars.k8s.flux_namespace }} context
       shell: |
         kubectl config use-context {{ gvars.k8s.flux_namespace }}
+      become: true
+      become_user: "{{ gvars.k8s.user }}"
+  become: true
   when: inventory_hostname in groups["k8sMaster"]
 
 - name: Configure k8s Worker Node
   block:
     - name: Copy join command from Ansiblehost to the worker nodes.
-      become: true
       copy:
         src: /tmp/kubernetes_join_command
         dest: /tmp/kubernetes_join_command
         mode: 0777
+      become: true
 
       # Add intellegence to skip if already joined
-    - name: Join the Worker nodes to the cluster.
+    - name: Join the Worker nodes to the cluster
       become: true
       command: sh /tmp/kubernetes_join_command
       register: joined_or_not
@@ -114,12 +126,14 @@
         path: /tmp/kubernetes_join_command
         state: absent
       become: true
+  become: true
 
-    - name: Delete k8s join command file
-      file:
-        path: /tmp/kubernetes_join_command
-        state: absent
-      delegate_to: localhost
-      become: true
-      run_once: true
   when: inventory_hostname in groups["k8sNode"]
+
+- name: Delete k8s join command file
+  file:
+    path: /tmp/kubernetes_join_command
+    state: absent
+  delegate_to: localhost
+  become: true
+  run_once: true

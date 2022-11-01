@@ -1,20 +1,20 @@
 ---
 - name: Add stable helm repo
   command: "helm repo add --force-update stable https://charts.helm.sh/stable"
-  # delegate_to: localhost
-  become: false
+  become: true
+  become_user: "{{ gvars.k8s.user }}"
 
 - name: Add Nginx Ingress Repository
   command: "helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx"
-  # delegate_to: localhost
-  become: false
+  become: true
+  become_user: "{{ gvars.k8s.user }}"
 
 - name: Add Traefik Ingress Repository
   command: "helm repo add ingress-traefik https://helm.traefik.io/traefik"
-  # delegate_to: localhost
-  become: false
+  become: true
+  become_user: "{{ gvars.k8s.user }}"
 
 - name: Update helm repos
   command: "helm repo update"
-  # delegate_to: localhost
-  become: false
+  become: true
+  become_user: "{{ gvars.k8s.user }}"

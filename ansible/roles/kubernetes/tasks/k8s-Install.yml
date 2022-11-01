@@ -4,22 +4,26 @@
     - name: Adding kubernetes apt key
       apt_key:
         url: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
+      become: true
 
     - name: Adding kubernetes apt repo
       apt_repository:
         repo: "deb https://apt.kubernetes.io/ kubernetes-xenial main"
+      become: true
 
     - name: Installing Kubernetes
       apt:
         name: "{{ item.name }}={{ item.version }}"
         state: present
         force: true
+      become: true
       loop: "{{ gvars.k8s.package_versions }}"
 
     - name: Preventing unintended upgrades
       dpkg_selections:
         name: "{{ item.name }}"
         selection: hold
+      become: true
       loop: "{{ gvars.k8s.package_versions }}"
 
     - name: Ensure kubelet is started and enabled at boot.
@@ -27,4 +31,5 @@
         name: kubelet
         state: started
         enabled: true
+      become: true
   when: ansible_os_family == "Debian"
