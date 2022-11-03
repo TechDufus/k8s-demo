@@ -1,0 +1,14 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: "nfs-{{ .Chart.Name }}"
+  namespace: {{ .Values.namespace }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10M
+  storageClassName: ''
+  volumeName: "nfs-{{ .Chart.Name }}"

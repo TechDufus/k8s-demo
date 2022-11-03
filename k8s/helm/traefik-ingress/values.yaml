@@ -1,0 +1,4 @@
+namespace: "traefik-system"
+certAcmeEmail: "dufus@email.com" 
+lbPublicIP: "RE.PL.ACE.ME"
+

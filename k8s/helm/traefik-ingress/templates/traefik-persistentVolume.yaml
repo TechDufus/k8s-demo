@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: "nfs-{{ .Chart.Name }}"
+spec:
+  capacity:
+    storage: 10M
+  claimRef:
+    name: "nfs-{{ .Chart.Name }}"
+    namespace: {{ .Values.namespace }}
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: ''
+  # CONVERT THIS TO CEPH STORAGE
+  nfs:
+    server: <insert your nfs host>
+    path: <insert your nfs path>

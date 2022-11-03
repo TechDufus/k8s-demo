@@ -1,0 +1,41 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Chart.Name }}-static"
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+data:
+  traefik.yml: |
+    global:
+      checkNewVersion: false
+      sendAnonymousUsage: true
+    entryPoints:
+      http:
+        address: :80
+        http:
+          redirections:
+            entryPoint:
+              to: https
+              scheme: https
+              permanent: false
+              priority: 1
+      https:
+        address: :443
+        http:
+          tls: {}
+    providers:
+      kubernetesCRD: {}
+    api:
+      dashboard: true
+    ping:
+      entryPoint: http
+    log:
+      level: INFO
+    certificatesResolvers:
+      default:
+        acme:
+          email: {{ .Values.certAcmeEmail }}
+          storage: /acme/acme.json
+          tlsChallenge: {}
